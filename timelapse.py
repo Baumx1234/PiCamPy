@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 from picamera2 import Picamera2
 
-from parse_arguments import parse_arguments
+from util_functions import setup_logging
 
 
 class TimelapseCamera:
@@ -21,7 +21,7 @@ class TimelapseCamera:
         self.start_time = None
 
         # Setup logging
-        self.logger = self.setup_logging(log_filename, log_level)
+        self.logger = setup_logging(log_filename, log_level)
 
         # Register signal handlers
         signal.signal(signal.SIGTERM, self.signal_handler)
@@ -32,25 +32,6 @@ class TimelapseCamera:
         self.logger.info(f"  Output directory: {self.output_dir}")
         self.logger.info(f"  File format: {self.file_format}")
         self.logger.info(f"  Interval: {self.interval} minutes")
-
-    def setup_logging(self, log_filename, log_level):
-        """Configure logging with both console and file output."""
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        log_file = os.path.join(script_dir, log_filename)
-
-        logging.basicConfig(
-            level=log_level,
-            format="%(asctime)s - %(levelname)s - %(message)s",
-            handlers=[
-                logging.StreamHandler(),  # For systemd/journalctl
-                logging.FileHandler(log_file),  # For logging to a file
-            ],
-            force=True,  # Override existing configuration
-        )
-
-        logger = logging.getLogger(__name__)
-        logger.info(f"Logging initialized - log file: {log_file}")
-        return logger
 
     def ensure_directory_exists(self, directory_path):
         """Create directory if it doesn't exist."""
@@ -168,17 +149,58 @@ class TimelapseCamera:
             self.logger.error(f"Error stopping camera: {e}")
 
 
+def parse_arguments():
+    """Parse command line arguments for timelapse script."""
+    parser = argparse.ArgumentParser(description="Timelapse camera script")
+
+    parser.add_argument(
+        "--output-dir",
+        "-o",
+        type=str,
+        default=os.path.join(os.path.expanduser("~"), "growcam", "images"),
+        help="Base output directory for images (default: ~/growcam/images)",
+    )
+
+    parser.add_argument(
+        "--format",
+        "-f",
+        type=str,
+        choices=["png", "jpg", "jpeg"],
+        default="png",
+        help="Image file format (default: png)",
+    )
+
+    parser.add_argument(
+        "--interval",
+        "-i",
+        type=int,
+        default=30,
+        help="Interval between photos in minutes (default: 30)",
+    )
+
+    parser.add_argument(
+        "--log-level",
+        type=str,
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        default="INFO",
+        help="Logging level (default: INFO)",
+    )
+
+    return parser.parse_args()
+
+
 def main():
     args = parse_arguments()
+
+    log_level = getattr(logging, args.log_level.upper())
 
     camera = TimelapseCamera(
         output_dir=args.output_dir,
         file_format=args.format,
         interval=args.interval,
         log_filename="timelapse.log",
-        log_level=logging.INFO,
+        log_level=log_level,
     )
-
     success = camera.run()
     return 0 if success else 1
 
