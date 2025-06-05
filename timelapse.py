@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 
 from picamera2 import Picamera2
 
+from parse_arguments import parse_arguments
+
 
 class TimelapseCamera:
     def __init__(self, output_dir, file_format, interval, log_filename, log_level):
@@ -164,38 +166,6 @@ class TimelapseCamera:
                 self.logger.info("Camera stopped successfully")
         except Exception as e:
             self.logger.error(f"Error stopping camera: {e}")
-
-
-def parse_arguments():
-    """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description="Timelapse camera script")
-
-    parser.add_argument(
-        "--output-dir",
-        "-o",
-        type=str,
-        default=os.path.join(os.path.expanduser("~"), "growcam", "images"),
-        help="Base output directory for images (default: ~/growcam/images)",
-    )
-
-    parser.add_argument(
-        "--format",
-        "-f",
-        type=str,
-        choices=["png", "jpg", "jpeg"],
-        default="png",
-        help="Image file format (default: png)",
-    )
-
-    parser.add_argument(
-        "--interval",
-        "-i",
-        type=int,
-        default=1,
-        help="Interval between photos in minutes (default: 5)",
-    )
-
-    return parser.parse_args()
 
 
 def main():
