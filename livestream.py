@@ -193,7 +193,7 @@ def main():
     camera = LiveStreamCamera(
         resolution=resolution,
         framerate=args.framerate,
-        ip_adress=args.ip_address,
+        ip_address=args.ip_address,
         port=args.port,
         log_filename="livestream.log",
         log_level=log_level,

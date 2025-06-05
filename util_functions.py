@@ -5,7 +5,11 @@ import os
 def setup_logging(log_filename, log_level):
     """Configure logging with both console and file output."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    log_file = os.path.join(script_dir, "logs", log_filename)
+    logs_dir = os.path.join(script_dir, "logs")
+
+    os.makedirs(logs_dir, exist_ok=True)
+
+    log_file = os.path.join(logs_dir, log_filename)
 
     logging.basicConfig(
         level=log_level,
