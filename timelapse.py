@@ -174,8 +174,8 @@ def parse_arguments():
         "--interval",
         "-i",
         type=int,
-        default=30,
-        help="Interval between photos in minutes (default: 30)",
+        default=5,
+        help="Interval between photos in minutes (default: 5)",
     )
 
     parser.add_argument(

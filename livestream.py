@@ -89,7 +89,6 @@ class LiveStreamCamera:
                 self.logger.info("Camera stopped successfully")
         except Exception as e:
             self.logger.error(f"Error stopping camera: {e}")
-            pass
 
     def run(self):
         """Run the Flask application."""
@@ -108,6 +107,7 @@ class LiveStreamCamera:
                     "host": self.ip_address,
                     "port": self.port,
                     "debug": False,
+                    "threaded": True,
                     "use_reloader": False,
                 },
             )
