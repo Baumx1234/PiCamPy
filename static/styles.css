@@ -229,24 +229,6 @@ h2 {
     }
 }
 
-/* Add a subtle animation for active elements */
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.4);
-    }
-
-    70% {
-        box-shadow: 0 0 0 10px rgba(58, 134, 255, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(58, 134, 255, 0);
-    }
-}
-
-.active-camera {
-    animation: pulse 2s infinite;
-}
 
 /* Toast Container */
 .toast-container {
