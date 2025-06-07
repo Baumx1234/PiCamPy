@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Livestream - Camera Management</title>
+{% endblock %}
+
+{% block body %}
+<main>
+    <section class="camera-controls">
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" class="video-feed" alt="Live Camera Stream">
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Control Panel - Camera Management</title>
+{%endblock %}
+
+
+{% block body %}
+<main>
+    <div class="camera-sections">
+        <section class="camera-controls {% if is_timelapse_active %}active-camera{% endif %}">
+            <h2>Timelapse</h2>
+
+            <form action="{{ url_for('toggle_timelapse') }}" method="post" class="timelapse-form">
+                <div class="form-group">
+                    <label for="output_dir">Output directory:</label>
+                    <input type="text" id="output_dir" name="output_dir" placeholder="~/growcam/images">
+                </div>
+
+                <div class="form-group">
+                    <label for="interval">Interval (Minutes):</label>
+                    <input type="number" id="interval" name="interval" min="1" placeholder="5">
+                </div>
+
+                <div class="form-group">
+                    <label for="file_format">File format:</label>
+                    <select id="file_format" name="file_format">
+                        <option value="" selected disabled hidden>Choose here (Default: PNG)</option>
+                        <option value="png">PNG</option>
+                        <option value="jpg">JPG</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn {% if is_timelapse_active %}btn-stop{% else %}btn-start{% endif %}">
+                    {% if is_timelapse_active %}Stop Timelapse{% else %}Start Timelapse{% endif %}
+                </button>
+            </form>
+        </section>
+
+        <section class="camera-controls {% if is_livestream_active %}active-camera{% endif %}">
+            <h2>Livestream</h2>
+
+            <form action="{{ url_for('toggle_livestream') }}" method="post" class="livestream-form">
+                <div class="form-group">
+                    <label for="resolution_width">Resolution Width:</label>
+                    <input type="number" id="resolution_width" name="resolution_width" min="320" max="1920"
+                        placeholder="1024">
+                </div>
+
+                <div class="form-group">
+                    <label for="resolution_height">Resolution Height:</label>
+                    <input type="number" id="resolution_height" name="resolution_height" min="240" max="1080"
+                        placeholder="768">
+                </div>
+
+                <div class="form-group">
+                    <label for="framerate">Framerate:</label>
+                    <input type="number" id="framerate" name="framerate" min="15" max="60" placeholder="15">
+                </div>
+
+                <button type="submit" class="btn {% if is_livestream_active %}btn-stop{% else %}btn-start{% endif %}">
+                    {% if is_livestream_active %}Stop Livestream{% else %}Start Livestream{% endif %}
+                </button>
+            </form>
+        </section>
+    </div>
+</main>
+{%endblock %}

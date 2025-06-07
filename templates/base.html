@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Toast container for flash messages -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="toast-container">
+        {% for message in messages %}
+        <div class="toast-message">
+            <span>{{ message }}</span>
+            <button class="toast-close">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <header class="header">
+        <h1>Camera Management</h1>
+        <nav class="navbar">
+            <ul>
+                <li><a href="{{ url_for('index') }}">Control Panel</a></li>
+                {% if is_livestream_active %}<li><a href="{{ url_for('livestream') }}">Livestream</a></li>{% endif %}
+            </ul>
+        </nav>
+    </header>
+    {% block body %}{% endblock %}
+
+    <!-- Add JavaScript for toast interactions -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Animate toasts in
+            const toasts = document.querySelectorAll('.toast-message');
+            toasts.forEach((toast, index) => {
+                // Stagger the animations
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 100 * index);
+
+                // Auto-dismiss after a delay
+                setTimeout(() => {
+                    dismissToast(toast);
+                }, 5000 + (500 * index)); // Base 5s + staggered time
+
+                // Add click handler for close button
+                toast.querySelector('.toast-close').addEventListener('click', function () {
+                    dismissToast(toast);
+                });
+            });
+
+            function dismissToast(toast) {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300); // Match the CSS transition time
+            }
+        });
+    </script>
+</body>
+
+</html>

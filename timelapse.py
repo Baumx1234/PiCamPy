@@ -1,8 +1,4 @@
-import argparse
-import logging
 import os
-import signal
-import sys
 import time
 from datetime import datetime, timedelta
 
@@ -23,10 +19,6 @@ class TimelapseCamera:
         # Setup logging
         self.logger = setup_logging(log_filename, log_level)
 
-        # Register signal handlers
-        signal.signal(signal.SIGTERM, self.signal_handler)
-        signal.signal(signal.SIGINT, self.signal_handler)
-
         # Log configuration
         self.logger.info("Configuration:")
         self.logger.info(f"  Output directory: {self.output_dir}")
@@ -43,11 +35,6 @@ class TimelapseCamera:
         except OSError as e:
             self.logger.error(f"Error creating directory {directory_path}: {e}")
             return False
-
-    def signal_handler(self, signum, frame):
-        """Handle shutdown signals gracefully."""
-        self.logger.info(f"Received signal {signum}, initiating graceful shutdown...")
-        self.shutdown_event = True
 
     def initialize_camera(self):
         """Initialize the camera."""
@@ -144,66 +131,7 @@ class TimelapseCamera:
         try:
             if self.picam2:
                 self.picam2.stop()
-                self.logger.info("Camera stopped successfully")
+                self.picam2.close()
+                self.picam2 = None
         except Exception as e:
             self.logger.error(f"Error stopping camera: {e}")
-
-
-def parse_arguments():
-    """Parse command line arguments for timelapse script."""
-    parser = argparse.ArgumentParser(description="Timelapse camera script")
-
-    parser.add_argument(
-        "--output-dir",
-        "-o",
-        type=str,
-        default=os.path.join(os.path.expanduser("~"), "growcam", "images"),
-        help="Base output directory for images (default: ~/growcam/images)",
-    )
-
-    parser.add_argument(
-        "--format",
-        "-f",
-        type=str,
-        choices=["png", "jpg", "jpeg"],
-        default="png",
-        help="Image file format (default: png)",
-    )
-
-    parser.add_argument(
-        "--interval",
-        "-i",
-        type=int,
-        default=5,
-        help="Interval between photos in minutes (default: 5)",
-    )
-
-    parser.add_argument(
-        "--log-level",
-        type=str,
-        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-        default="INFO",
-        help="Logging level (default: INFO)",
-    )
-
-    return parser.parse_args()
-
-
-def main():
-    args = parse_arguments()
-
-    log_level = getattr(logging, args.log_level.upper())
-
-    camera = TimelapseCamera(
-        output_dir=args.output_dir,
-        file_format=args.format,
-        interval=args.interval,
-        log_filename="timelapse.log",
-        log_level=log_level,
-    )
-    success = camera.run()
-    return 0 if success else 1
-
-
-if __name__ == "__main__":
-    sys.exit(main())
